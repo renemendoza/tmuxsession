@@ -1,0 +1,11 @@
+cd '/home/rene/code/rentavox'
+
+tmux new-session -d -s <%= app_name %>
+tmux new-window -t <%= app_name %>:1 -n 'bash'
+tmux new-window -t <%= app_name %>:2 -n 'bash'
+tmux new-window -t <%= app_name %>:3 -n 'bash'
+tmux new-window -t <%= app_name %>:4 -n 'rails' 'bundle exec rails s'
+tmux new-window -t <%= app_name %>:5 -n 'console' 'bundle exec rails c'
+tmux new-window -t <%= app_name %>:6 -n 'test'
+tmux new-window -t <%= app_name %>:7 -n 'Asterisk ' 'sudo asterisk -r'
+tmux select-window -t <%= app_name %>:1

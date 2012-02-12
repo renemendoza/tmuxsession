@@ -1,0 +1,7 @@
+tmuxsession launches tmux sessions using configuration that is read from a file
+
+usage:
+
+$tmuxsession mysession
+
+expects that the file recipes/mysession contains a valid tmux session configuration

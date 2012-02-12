@@ -1,0 +1,58 @@
+#!/usr/bin/ruby
+
+require 'yaml'
+require 'erb'
+require 'tempfile'
+
+class TmuxSession
+attr_accessor :app_name
+
+  def dir
+  end
+
+  def file_name
+    [File.expand_path(File.dirname(__FILE__)), "projects", "tmuxsession", "recipes", app_name].join("/")
+  end
+
+  def load_file
+    template = ERB.new File.open(file_name).read
+    template.result(binding)
+  end
+
+  def initialize(name)
+    @app_name = name
+    raise 'Application name cant be null' if name.nil?
+  end
+
+  class << self
+    def is_running?(name)
+      ! `#{command(name)}`.empty?
+    end
+
+    def command(name)
+      "ps aux | grep -v ruby | grep tmu[x] | grep #{name[0..-2]}[#{name.split('').last}]"
+    end
+
+    def run(name)
+      unless is_running?( name ) 
+        #` #{self.new( name ).load_file.inspect} | /bin/bash `
+        recipe    = self.new( name ).load_file
+        temp_file = Tempfile.new('tmp')
+        recipe.each do |line|
+          temp_file.puts "#{line}"
+        end
+        temp_file.flush
+        system "/bin/bash #{temp_file.path}"
+      end
+      self.join name
+    end
+
+    def join(name)
+      #"tmux -2 attach-session -t #{name}"
+      `tmux -2 attach-session -t #{name}`
+    end
+  end
+end
+
+TmuxSession.run ARGV[0]
+
